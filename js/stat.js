@@ -1,3 +1,5 @@
+'use strict';
+
 window.renderStatistics = function(ctx, names, times) {
 	var CANVAS_WIDTH = 420;
 	var CANVAS_HEIGHT = 270;
