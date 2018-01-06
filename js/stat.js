@@ -1,14 +1,14 @@
 'use strict';
 
 window.renderStatistics = function(ctx, names, times) {
-	var CANVAS_WIDTH = 420;
-	var CANVAS_HEIGHT = 270;
-	var CANVAS_X = 100;
-	var CANVAS_Y = 10;
-	var CANVAS_SHADOW_X = CANVAS_X + 10;
-	var CANVAS_SHADOW_Y = CANVAS_Y + 10;
-	var CANVAS_PADDING_X = CANVAS_X + 20;
-	var CANVAS_PADDING_Y = CANVAS_Y + 20;
+	var CANVAS_WIDTH = 420,
+			CANVAS_HEIGHT = 270,
+			CANVAS_X = 100,
+			CANVAS_Y = 10,
+			CANVAS_SHADOW_X = CANVAS_X + 10,
+			CANVAS_SHADOW_Y = CANVAS_Y + 10,
+			CANVAS_PADDING_X = CANVAS_X + 20,
+			CANVAS_PADDING_Y = CANVAS_Y + 20;
 
 	// Рисуем тень
 	ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -26,8 +26,8 @@ window.renderStatistics = function(ctx, names, times) {
 
 	// Округляем массив, находим макс элемент и его индекс
 	roundArray(times);
-	var max = getMaxElement(times);
-	var maxIndex = getMaxElementIndex(times);
+	var max = getMaxElement(times),
+			maxIndex = getMaxElementIndex(times);
 
 	// Находим индекс игрока "Вы"
 	var myHistogramIndex = names.indexOf('Вы');
@@ -37,10 +37,10 @@ window.renderStatistics = function(ctx, names, times) {
 	ctx.fillText('Список результатов:', CANVAS_PADDING_X, 70);
 
 	// Задаем параметры гистограмм
-	var histogramHeight;
-	var histogramWidth = 40;
-	var histogramX = 50;
-	var gutter = 50;
+	var gutter = 50,
+			histogramWidth = 40,
+			histogramX = 50,
+			histogramHeight;
 
 	// Рисуем гистограммы
 	for (var i = 0; i < times.length; i++) {
@@ -49,7 +49,7 @@ window.renderStatistics = function(ctx, names, times) {
 		histogramHeight = 150 * times[i] / max;
 
 		// Отступ для первой гистограммы
-		if (i === 0) {
+		if (!i) {
 			histogramX = 30;
 		}
 
@@ -57,11 +57,12 @@ window.renderStatistics = function(ctx, names, times) {
 		if (i === myHistogramIndex) {
 			ctx.fillStyle = 'rgba(255, 0, 0, 1)';
 		} else {
-		ctx.fillStyle = 'rgba(0, 0, 255, ' + getRandomOpacity(1, 0.3) + ')';
+		ctx.fillStyle = 'rgba(0, 0, 255, ' + getRandomMinMax(1, 0.3) + ')';
 		}
 
 		// Выводим гистограмму
 		ctx.fillRect(histogramX + histogramWidth + gutter, 110, histogramWidth, histogramHeight);
+
 		// Выводим имя игрока, время
 		ctx.fillText(names[i], histogramX + histogramWidth + gutter, histogramWidth + gutter);
 		ctx.fillText(times[i] + ' мс', histogramX + histogramWidth + gutter, CANVAS_HEIGHT - 5);
@@ -69,17 +70,34 @@ window.renderStatistics = function(ctx, names, times) {
 		// Позиционируем следующую гистограмму
 		histogramX += histogramWidth + gutter;
 	}
-	// Объявляем функции
-	function getRandomOpacity(max, min) {
+
+	/**
+	 * @description Возвращает случайное число от min до max
+	 * @param {number} max Максимальное число
+	 * @param {number} min Минимальное число
+	 * @return {number}
+	 */
+	function getRandomMinMax(max, min) {
 		return (Math.random() * (max - min) + min);
 	}
+
+	/**
+	 * @description Округляет числовой массив
+	 * @param {array} arr Массив с числами
+	 */
 	function roundArray(arr) {
 		for (var i = 0; i < arr.length; i++) {
 			arr[i] = Math.round(arr[i]);
 		}
-		return max;
 	}
-	function getMaxElement(arr, max = 0) {
+
+	/**
+	 * @description Возвращает максимальный элемент массива
+	 * @param {array} arr Массив с числами
+	 * @return {number} max Максимальный элемет массива
+	 */
+	function getMaxElement(arr) {
+		var max = 0;
 		for (var i = 0; i < times.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -87,9 +105,17 @@ window.renderStatistics = function(ctx, names, times) {
 		}
 		return max;
 	}
-	function getMaxElementIndex(arr, max = 0) {
+
+	/**
+	 * @description Возвращает индекс максимального элемента массива
+	 * @param {array} arr Массив с числами
+	 * @return {number} maxElementIndex Индекс максимального элемента массива
+	 */
+	function getMaxElementIndex(arr) {
+		var max = 0,
+				maxElementIndex;
 		for (var i = 0; i < times.length; i++) {
-			var maxElementIndex = 0;
+			maxElementIndex = 0;
 			if (arr[i] > max) {
 				max = arr[i];
 				maxElementIndex = i;
