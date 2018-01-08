@@ -4,8 +4,15 @@ var setup = document.querySelector('.setup'),
 		setupOpen = document.querySelector('.setup-open'),
 		setupOpenIcon = setupOpen.querySelector('.setup-open-icon'),
 		setupClose = setup.querySelector('.setup-close'),
+		setupHandle = setup.querySelector('.upload'),
+
 		setupInput = setup.querySelector('.setup-user-name'),
 		setupSubmit = setup.querySelector('.setup-submit'),
+
+		artifacts = setup.querySelector('.setup-artifacts'),
+		shop = setup.querySelector('.setup-artifacts-shop'),
+		draggedItem = null,
+
 		similarList = document.querySelector('.setup-similar-list'),
 		similarWizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item'),
 
@@ -13,6 +20,7 @@ var setup = document.querySelector('.setup'),
 		wizardEyes = setup.querySelector('.wizard-eyes'),
 		fireball = setup.querySelector('.setup-fireball-wrap'),
 		fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'],
+
 		wizardNames = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
 		wizardSurnames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
 		wizardCoatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
@@ -43,6 +51,84 @@ var setup = document.querySelector('.setup'),
 		},
 		fireballClickHandler = function() {
 			changeColor(fireball, fireballColors);
+		},
+		setupHandleMousedownHandler = function (e) {
+			e.preventDefault();
+
+			// Записываем стартовые координаты
+			var startCoords = {
+				x: e.clientX,
+				y: e.clientY
+			}
+
+			// Обработчик перемещения
+			var setupMousemoveHandle = function (moveEvent) {
+				moveEvent.preventDefault();
+
+				// Записываем смещение (стартовые - текущие)
+				var shift = {
+					x: startCoords.x - moveEvent.clientX,
+					y: startCoords.y - moveEvent.clientY
+				}
+
+				// Перезаписываем стартовые (т.к. элемент переместили)
+				startCoords = {
+					x: moveEvent.clientX,
+					y: moveEvent.clientY
+				}
+
+				// Задаем окну координаты
+				setup.style.top = setup.offsetTop - shift.y + 'px';
+				setup.style.left = setup.offsetLeft - shift.x + 'px';
+
+			}
+
+			// После отжатия кнопки мыши, удаляем обработчики перемещения и отжатия
+			var setupMouseupHandle = function (mouseupEvent) {
+				mouseupEvent.preventDefault();
+				document.removeEventListener('mousemove', setupMousemoveHandle);
+				document.removeEventListener('mouseup', setupMouseupHandle);
+			}
+
+			// При нажатии добавляем обработчики перемещения и отжатия
+			document.addEventListener('mousemove', setupMousemoveHandle);
+			document.addEventListener('mouseup', setupMouseupHandle);
+		},
+		shopDragstartHandler = function (e) {
+
+			// Если элемент, который начали перетаскивать внутри шопа является картинкой, то сохраняем его в draggedItem
+			if (e.target.tagName.toLowerCase() === 'img') {
+				draggedItem = e.target;
+				e.dataTransfer.setData('text/plain', draggedItem.alt);
+			}
+		},
+		artifactsDragoverHandler = function (e) {
+
+			// По ум. запрещено перетаскивать что и куда попало, поэтому отменяем
+			e.preventDefault();
+			return false;
+		},
+		artifactsDropHandler = function (e) {
+
+			// Когда дропаем в ячейку элемент, то убираем желтый фон и добавляем в него перетаскиваемый элемент (draggedItem)
+			e.target.style.backgroundColor = '';
+			e.target.appendChild(draggedItem);
+
+			// Если хотим делать копии из шопа
+			// e.target.appendChild(draggedItem.cloneNode(true));
+			e.preventDefault();
+		},
+		artifactsDragenterHandler = function (e) {
+
+			// Задаем желтый фон ячейке, на которую наводим перетаскиваемый элемент
+			e.target.style.backgroundColor = 'yellow';
+			e.preventDefault();
+		},
+		artifactsDragleaveHandler = function (e) {
+
+			// Убираем желтый фон, уводя с ячейки перетаскиваемый элемент (draggedItem)
+			e.target.style.backgroundColor = '';
+			e.preventDefault();
 		}
 
 
@@ -64,6 +150,22 @@ setupClose.addEventListener('keydown', function(e) {
 		closePopup();
 	}
 });
+
+// Обработчик перетаскивания окна с персонажем (Drag)
+setupHandle.addEventListener('mousedown', setupHandleMousedownHandler);
+setupHandle.addEventListener('click', function (e) {
+	e.preventDefault();
+});
+
+// Обработчик, запоминающий перетаскиваемый элемент
+shop.addEventListener('dragstart', shopDragstartHandler);
+
+// Обработчики drag'n'drop для "ранца" персонажа
+artifacts.addEventListener('dragover', artifactsDragoverHandler);
+artifacts.addEventListener('drop', artifactsDropHandler);
+artifacts.addEventListener('dragenter', artifactsDragenterHandler);
+artifacts.addEventListener('dragleave', artifactsDragleaveHandler);
+
 
 // Заполняем массив с персонажами
 for (var i = 0; i < WIZARDS_COUNT; i++) {
