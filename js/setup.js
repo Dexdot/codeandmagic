@@ -20,22 +20,25 @@
         document.addEventListener('keydown', popupEscHandler);
       },
 
-      // Закрыть окно
-      closePopup = function () {
-        setup.classList.add('hidden');
-        document.removeEventListener('keydown', popupEscHandler);
-        
-      },
       // Если нажали Esc и поле с именем персонажа не активно, то закрываем окно с персонажем
       popupEscHandler = function (e) {
         if (window.util.IsEscPress(e) && !(document.activeElement.className === 'setup-user-name')) {
-          closePopup();
+          window.setup.closePopup();
         }
       }
 
+  window.setup = {
+
+    // Закрыть окно
+    closePopup: function () {
+      setup.classList.add('hidden');
+      document.removeEventListener('keydown', popupEscHandler);
+    }
+  }
+
   // Обработчики открытия/закрытия окна с персонажем
   setupOpen.addEventListener('click', openPopup);
-  setupClose.addEventListener('click', closePopup);
+  setupClose.addEventListener('click', window.setup.closePopup);
 
   // Открытие на Enter
   setupOpenIcon.addEventListener('keydown', function (e) {
@@ -47,7 +50,9 @@
   // Закрытие на Esc
   setupClose.addEventListener('keydown', function (e) {
     if (window.util.IsEnterPress(e)) {
-      closePopup();
+      window.setup.closePopup();
     }
   });
+
+  
 })();

@@ -43,7 +43,7 @@
 	 * @param {string} coatColor - Цвет мантии персо	нажа
 	 * @param {string} eyeColor - Цвет глаз персонажа
 	 */
-	function Wizard(name, coatColor, eyeColor) {
+	function Wizard() {
 		this.name = window.util.getRandomElement(wizardNames) + ' ' + window.util.getRandomElement(wizardSurnames);
 		this.coatColor = window.util.getRandomElement(window.wizards.coatColors);
 		this.eyeColor = window.util.getRandomElement(window.wizards.eyeColors);
