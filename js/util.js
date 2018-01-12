@@ -6,6 +6,10 @@
 
   window.util = {
 
+    STATUS_OK: 200,
+    STATE_LOADING: 3,
+    STATE_DONE: 4,
+
     /**
      * @description Проверяет нажатие клавиши Esc
      * @param {Event} e Событие

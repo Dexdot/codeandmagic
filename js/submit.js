@@ -4,7 +4,6 @@
   var form = document.querySelector('.setup-wizard-form'),
       setup = document.querySelector('.setup'),
       URL = 'https://js.dump.academy/code-and-magick',
-      STATUS_OK = 200,
 
       // Передаем статус ответа
       formSubmitHandler = function(xhr) {
@@ -12,12 +11,12 @@
       }
 
   form.addEventListener('submit', function(e) {
-    window.upload(URL, new FormData(form), formSubmitHandler);
     e.preventDefault();
+    window.upload(URL, new FormData(form), formSubmitHandler);
   })
 
   function showMessage(status) {
-    if (status === STATUS_OK) {
+    if (status === window.util.STATUS_OK) {
       alert('Сохранено!');
     } else {
       alert('Произошла ошибка, попробуйте снова');

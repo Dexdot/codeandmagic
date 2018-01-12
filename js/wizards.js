@@ -1,5 +1,6 @@
+'use strict';
+
 (function() {
-	'use strict';
 
 	window.wizards = {
 		coatColors: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
@@ -8,45 +9,38 @@
 	};
 
 	var setup = document.querySelector('.setup'),
+			URL = 'https://js.dump.academy/code-and-magick/data',
 
 		similarList = document.querySelector('.setup-similar-list'),
 		similarWizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item'),
 
-		wizardNames = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'],
-		wizardSurnames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'],
-
 		WIZARDS_COUNT = 4,
-		wizards = [];
+		wizards = [],
+		
+		wizardsLoadHandler = function (xhr) {
+			if (xhr.response) {
+				wizards = xhr.response;			
+			}
+			renderWizards();
+		};
+	
+	// Загружаем похожих персонажей с сервера
+	window.load(wizardsLoadHandler, URL);
+	
+	
+	function renderWizards() {
+		// Создаем фрагмент и добавляем в него персонажей
+		var fragment = document.createDocumentFragment();
+		for (var i = 0; i < WIZARDS_COUNT; i++) {
+			fragment.appendChild(renderWizard(i));
+		}
 
-	// Заполняем массив с персонажами
-	for (var i = 0; i < WIZARDS_COUNT; i++) {
-		wizards.push(new Wizard);
-	}
+		// Выводим фрагмент с похожими персонажами
+		similarList.innerHTML = '';
+		similarList.appendChild(fragment);
 
-	// Создаем фрагмент и добавляем в него персонажей
-	var fragment = document.createDocumentFragment();
-	for (var i = 0; i < WIZARDS_COUNT; i++) {
-		fragment.appendChild(renderWizard(i));
-	}
-
-	// Выводим фрагмент с похожими персонажами
-	similarList.innerHTML = '';
-	similarList.appendChild(fragment);
-
-	// Показываем окно с похожими персонажами
-	document.querySelector('.setup-similar').classList.remove('hidden');
-
-	/**
-	 * Представляет персонажа
-	 * @constructor
-	 * @param {string} name - Имя персонажа
-	 * @param {string} coatColor - Цвет мантии персо	нажа
-	 * @param {string} eyeColor - Цвет глаз персонажа
-	 */
-	function Wizard() {
-		this.name = window.util.getRandomElement(wizardNames) + ' ' + window.util.getRandomElement(wizardSurnames);
-		this.coatColor = window.util.getRandomElement(window.wizards.coatColors);
-		this.eyeColor = window.util.getRandomElement(window.wizards.eyeColors);
+		// Показываем окно с похожими персонажами
+		document.querySelector('.setup-similar').classList.remove('hidden');
 	}
 
 	/**
@@ -57,16 +51,16 @@
 	function renderWizard(i) {
 
 		// Копия шаблона
-		var wizardElement = similarWizardTemplate.cloneNode(true);
+		var wizardElement = similarWizardTemplate.cloneNode(true);		
 
 		// Имя
 		wizardElement.querySelector('.setup-similar-label').textContent = wizards[i].name;
 
 		// Цвет мантии
-		wizardElement.querySelector('.wizard-coat').style.fill = wizards[i].coatColor;
+		wizardElement.querySelector('.wizard-coat').style.fill = wizards[i].colorCoat;
 
 		// Цвет глаз
-		wizardElement.querySelector('.wizard-eyes').style.fill = wizards[i].eyeColor;
+		wizardElement.querySelector('.wizard-eyes').style.fill = wizards[i].colorEyes;
 		return wizardElement;
 	}
 })();

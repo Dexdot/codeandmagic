@@ -1,13 +1,16 @@
 'use strict';
 
 (function() {
-  var xhr = new XMLHttpRequest(),
-      URL = 'https://js.dump.academy/code-and-magick/data';
+  var xhr = new XMLHttpRequest();
 
-  xhr.addEventListener('load', function() {
-    console.log(xhr.response);
-  })
-
-  xhr.open('GET', URL);
-  xhr.send();
+  window.load = function(callback, URL) {
+    var xhrLoadListener = function () {
+      callback(xhr);
+      xhr.removeEventListener('load', xhrLoadListener);
+    };
+    xhr.addEventListener('load', xhrLoadListener);
+    xhr.responseType = 'json';
+    xhr.open('GET', URL);
+    xhr.send();
+  }
 })();
