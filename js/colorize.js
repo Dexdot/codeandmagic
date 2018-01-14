@@ -4,15 +4,30 @@
   var wizardCoat = document.querySelector('.wizard-coat'),
       wizardEyes = document.querySelector('.wizard-eyes'),
       fireball = document.querySelector('.setup-fireball-wrap'),
+      prevTimer,
 
       // Меняем цвет мантии по клику
       wizardCoatClickHandler = function () {
         changeFill(wizardCoat, window.wizards.coatColors);
+        document.querySelector('input[name=coat-color]').value = document.querySelector('.wizard-coat').style.fill;
+
+        // Обновляем похожих персонажей с дебаунсем
+        clearTimeout(prevTimer);
+        prevTimer = setTimeout(function() {
+          window.wizards.updateWizards();
+        }, 300);
       },
 
       // Меняем цвет глаз по клику
       wizardEyesClickHandler = function () {
         changeFill(wizardEyes, window.wizards.eyeColors);
+        document.querySelector('input[name=eyes-color]').value = document.querySelector('.wizard-eyes').style.fill;
+
+        // Обновляем похожих персонажей с дебаунсем
+        clearTimeout(prevTimer);
+        prevTimer = setTimeout(function () {
+          window.wizards.updateWizards();
+        }, 300);        
       },
 
       // Меняем цвет фаербола по клику
@@ -25,7 +40,6 @@
   wizardEyes.addEventListener('click', wizardEyesClickHandler);
   fireball.addEventListener('click', fireballClickHandler);
 
-
   /**
    * @description Задает случайную заливку из массива arr для элемента elem
    * @param {element} elem Элемент, которому изменится цвет
@@ -33,7 +47,7 @@
    */
   function changeFill(elem, arr) {
     elem.style.fill = window.util.getRandomElement(arr);
-
+    
   }
 
   /**
